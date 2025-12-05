@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context:  .
+      dockerfile: docker/Dockerfile
+    container_name: laravel_app
+    user: "1000:1000" #Garante que os arquivos serão criados como root
+    ports:
+      - "8079:80"     #HTTP Lembrando que a esquerda é a da máquina e a doreita é a do conteiner
+      - "4443:443"    #HTTPS
+    volumes:
+      - ./:/app       #Monta a raiz do projeto no container
+    environment:
+      WEB_DOCUMENT_ROOT: /app/public
+      PHP_MEMORY_LIMIT: 512M
+      PHP_MAX_EXECUTION_TIME: 300
+
+  db:
+    image: postgres:14
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: laravel_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
